@@ -113,9 +113,9 @@ template.main[:3, :6] = (ploths.opts(show_legend=True) * plotlabels.opts(xoffset
 #                                                 s='size_v',color='gender',marker='marker',alpha=0.5,
 #                                                 xlim=(0,250),ylim=(0,500),**plot_opts).output()
 
-plothsheight = dfi_size.hvplot.scatter(title='Valve size', x='height',y='gender',
+plothsheight = dfi_size.hvplot.scatter(title='Valve size', x='height',y='gender', color='age',
                                                 s='size_v',marker='marker',alpha=0.5,
-                                                xlim=(0,250),ylim=(0,500),**plot_opts)
+                                                xlim=(0,250),ylim=(0,500),**plot_opts,colorbar=False)
 # plotlabelsheight = dfi_size.hvplot.labels(x='height',y='weight',s='size_v',text=str('size_v'),
 #                                     xlim=(0,250),ylim=(0,500),**plot_opts,text_baseline='top')
                                                 

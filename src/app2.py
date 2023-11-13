@@ -2,15 +2,8 @@ import hvplot.pandas
 # import numpy as np
 import panel as pn
 import pandas as pd
-# from plotnine import ggplot, geom_point, aes
-# xs = np.linspace(0, np.pi)
 
-# weightspace = np.linspace(0, 200)
-# heightspace = np.linspace(0, 250)
-# agespace = np.linspace(0, 150)
-
-# freq = pn.widgets.FloatSlider(name="Height", start=0, end=10, value=2)
-# phase = pn.widgets.FloatSlider(name="Weight", start=0, end=np.pi)
+pn.extension(sizing_mode="stretch_width")
 
 wheight = pn.widgets.FloatSlider(name="Height (cm)", start=0, end=250, value=100)
 wweight = pn.widgets.FloatSlider(name="Weight (kg)", start=0, end=250, value= 30)
@@ -23,28 +16,19 @@ def sizedf(height, weight, age):
               'size_v':[age+weight+height+30,age+height+weight-30,None,None]}
     return pd.DataFrame(points)
 
-# def sine(freq, phase):
-#     return pd.DataFrame(dict(y=np.sin(xs*freq+phase)), index=xs)
-
-# def cosine(freq, phase):
-#     return pd.DataFrame(dict(y=np.cos(xs*freq+phase)), index=xs)
-
-# dfi_sine = hvplot.bind(sine, freq, phase).interactive()
-# dfi_cosine = hvplot.bind(cosine, freq, phase).interactive()
-
 dfi_size = hvplot.bind(sizedf, wheight, wweight,wage).interactive()
-# dfi_cosine = hvplot.bind(cosine, freq, phase).interactive()
 
 plot_opts = dict(
-    responsive=True, min_height=400
+    responsive=True,
+    max_height=300
     # Align the curves' color with the template's color
     # color=pn.template.FastGridTemplate.accent_base_color
 )
 
 # Instantiate the template with widgets displayed in the sidebar
-template = pn.template.FastGridTemplate(
+template = pn.template.BootstrapTemplate(
     title="Heart valve sizes",
-    sidebar=[wheight, wweight, wage],
+    sidebar=[wheight, wweight, wage]
 )
 
 ploths = dfi_size.hvplot.scatter(title='Valve size', x='weight',y='size_v',
@@ -54,30 +38,24 @@ plotlabels = dfi_size.hvplot.labels(x='weight',y='size_v',s='size_v',text=str('s
                                     xlim=(0,250),ylim=(0,500),**plot_opts)
 # Populate the main area with plots, to demonstrate the grid-like API
 
-# plotsize = (ggplot(dfi_size,aes(x="height",y="size"))
-#             + geom_point()
-#             )
+maincol1 = (ploths * plotlabels.opts(xoffset=30)).output()
 
-template.main[:3, :6] = (ploths.opts(show_legend=True) * plotlabels.opts(xoffset=30)).output()
-
-# dfi_size.hvplot.scatter(title='Height vs size', x='height',y='size_v',
-#                                                 s='size_v',color='gender',marker='marker',alpha=0.5,
-#                                                 xlim=(0,250),ylim=(0,500),**plot_opts).output()
+# template.main[:2, :6] = maincol1
 
 plothsheight = dfi_size.hvplot.scatter(title='Valve size', x='height',y='gender', color='age',
                                                 s='size_v',marker='marker',alpha=0.5,
-                                                xlim=(0,250),ylim=(0,500),**plot_opts,colorbar=False)
-# plotlabelsheight = dfi_size.hvplot.labels(x='height',y='weight',s='size_v',text=str('size_v'),
-#                                     xlim=(0,250),ylim=(0,500),**plot_opts,text_baseline='top')
-                                                
-# template.main[:3, 6:] = dfi_size.hvplot.scatter(title='Weight vs size', x='weight',y='size_v',
-#                                                 s='size_v',color='gender',marker='marker', alpha=0.5,xlim=(0,200),ylim=(0,500),
-#                                                 **plot_opts).output()
+                                                xlim=(0,250),ylim=(0,500),**plot_opts,colorbar=False).output()
 
-# template.main[:3, 6:] = (plothsheight * plotlabelsheight.opts(xoffset=30)).output()
+template.main.append(
+    pn.Row(
+        pn.Card(maincol1),
+        pn.Card(plothsheight),
+    )
+)
+# maincol2 = pn.Column(plothsheight.output(), sizing_mode="stretch_both")
 
-template.main[:3, 6:] = (plothsheight).output()
 
+# template.main[:2, 6:12] = maincol2
 
 template.servable();
 
